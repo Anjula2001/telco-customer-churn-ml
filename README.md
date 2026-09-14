@@ -124,20 +124,19 @@ telco-customer-churn-ml/
 
 ### Completed
 
-* [x] Data cleaning
-* [x] Exploratory data analysis
-* [x] Feature encoding
-* [x] Train/test split
-* [x] Feature scaling
-* [x] Multiple classification models
-* [x] Cross-validation
-* [x] Hyperparameter tuning
-* [x] Confusion matrix analysis
-* [x] ROC-AUC evaluation
-* [x] Threshold tuning
-* [x] Class imbalance analysis
-* [x] Final model selection
-* [x] Kaggle notebook publication
+*  Data cleaning
+*  Exploratory data analysis
+*  Feature encoding
+*  Train/test split
+*  Feature scaling
+*  Multiple classification models
+*  Cross-validation
+*  Hyperparameter tuning
+*  Confusion matrix analysis
+*  ROC-AUC evaluation
+*  Threshold tuning
+*  Class imbalance analysis
+*  Final model selection
 
 ## Kaggle Notebook
 
