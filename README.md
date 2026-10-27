@@ -1,5 +1,11 @@
 # Telco Customer Churn Prediction
 
+## Live Demo
+
+🤗 [Try the Telco Churn Predictor](https://huggingface.co/spaces/amarakoon2001/telco-churn-predictor)
+
+Interactive customer churn predictions using the trained Logistic Regression model. Runs entirely in your browser.
+
 An end-to-end machine learning project for predicting customer churn using the Telco Customer Churn dataset.
 
 The project focuses on understanding customer churn patterns, comparing multiple classification algorithms, evaluating model performance, and selecting an appropriate operating threshold for a customer retention use case.
@@ -114,11 +120,11 @@ The exploratory analysis revealed several important patterns:
 ```text
 telco-customer-churn-ml/
 │
-├── Telco Customer Churn — EDA & ML.ipynb
+├── telco-customer-churn-eda-ml.ipynb
 └── README.md
 ```
 
-> The machine learning model is currently developed and evaluated in the Kaggle notebook. Model packaging, inference, API development, and deployment are planned as the next stage of the project.
+> The trained model is deployed as an interactive Hugging Face Static Space, with predictions running entirely in the browser.
 
 ## Current Status
 
@@ -137,6 +143,9 @@ telco-customer-churn-ml/
 *  Threshold tuning
 *  Class imbalance analysis
 *  Final model selection
+*  Model export
+*  Browser-based inference
+*  Hugging Face demo deployment
 
 ## Kaggle Notebook
 
