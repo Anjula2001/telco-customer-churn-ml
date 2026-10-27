@@ -1,180 +1,149 @@
 # Telco Customer Churn Prediction
 
+A machine learning portfolio project covering customer churn analysis, model comparison, validation-based threshold selection, and browser-based deployment.
+
 ## Live Demo
 
 🤗 [Try the Telco Churn Predictor](https://huggingface.co/spaces/amarakoon2001/telco-churn-predictor)
 
-Interactive customer churn predictions using the trained Logistic Regression model. Runs entirely in your browser.
-
-An end-to-end machine learning project for predicting customer churn using the Telco Customer Churn dataset.
-
-The project focuses on understanding customer churn patterns, comparing multiple classification algorithms, evaluating model performance, and selecting an appropriate operating threshold for a customer retention use case.
+Enter customer details to estimate churn probability using the trained Logistic Regression pipeline. Predictions run entirely in your browser.
 
 ## Project Overview
 
-Customer churn is an important business problem for telecom companies. Identifying customers who are likely to leave can help businesses take proactive retention actions.
+The project explores customer churn patterns and evaluates classification models for identifying customers who may leave a telecom service.
 
-In this project, customer data is analyzed and several machine learning classification models are trained and evaluated to predict whether a customer is likely to churn.
-
-### Objective
-
-Build and evaluate a machine learning model that can identify customers who are at higher risk of churn.
+The final implementation combines preprocessing and Logistic Regression in a scikit-learn Pipeline. The classification threshold is selected using a separate validation set.
 
 ## Dataset
 
-**Dataset:** Telco Customer Churn
-**Source:** IBM Sample Dataset / Kaggle
+- **Dataset:** Telco Customer Churn
+- **Source:** IBM sample dataset, available on Kaggle
+- **Customers:** 7,043
+- **Input attributes:** 19, excluding customer ID and target
 
-The dataset contains information about 7,043 telecom customers, including:
+Attributes include demographics, tenure, contract type, payment method, subscribed services, monthly charges, and total charges.
 
-* Customer demographics
-* Tenure
-* Contract information
-* Payment method
-* Internet services
-* Monthly charges
-* Total charges
-* Churn status
+Blank TotalCharges values for 11 zero-tenure customers are converted to zero.
 
-## Machine Learning Workflow
+## Final Workflow
 
-```text
-Data Loading
-     ↓
-Data Cleaning
-     ↓
-Exploratory Data Analysis
-     ↓
-Feature Engineering & Encoding
-     ↓
-Train / Test Split
-     ↓
-Feature Scaling
-     ↓
-Model Training
-     ↓
-Cross-Validation
-     ↓
-Hyperparameter Tuning
-     ↓
-Model Evaluation
-     ↓
-Threshold Tuning
-     ↓
-Final Model Selection
-```
+1. Load, inspect, and clean the data.
+2. Explore customer churn patterns.
+3. Create stratified training, validation, and test splits.
+4. Build a preprocessing and classification pipeline.
+5. Evaluate the pipeline using cross-validation on training data.
+6. Fit the pipeline on the training split.
+7. Select a classification threshold using validation F1-score.
+8. Evaluate the fixed model and threshold on the test split.
+9. Export the pipeline and deploy browser-based inference.
 
-## Models Evaluated
+## Earlier Model Experiments
 
-The following classification algorithms were evaluated:
+The notebook initially compared:
 
-* Logistic Regression
-* Decision Tree
-* Random Forest
-* K-Nearest Neighbors (KNN)
+| Model | Mean 5-Fold CV Accuracy |
+| --- | ---: |
+| Logistic Regression | 80.44% |
+| Random Forest | 78.84% |
+| KNN | 76.25% |
+| Decision Tree | 72.67% |
 
-### Cross-Validation Results
+These are historical exploratory results from the earlier workflow. Logistic Regression and KNN used scaling fitted before cross-validation, so these scores are not leakage-free estimates.
 
-| Model               | Mean 5-Fold CV Accuracy |
-| ------------------- | ----------------------: |
-| Logistic Regression |                  80.44% |
-| Random Forest       |                  78.84% |
-| KNN                 |                  76.25% |
-| Decision Tree       |                  72.67% |
+The final Logistic Regression pipeline was evaluated separately using the procedure below.
 
-Logistic Regression achieved the strongest baseline performance among the tested models.
+## Final Pipeline
 
-## Final Model
+- **Numeric features:** StandardScaler
+- **Categorical features:** OneHotEncoder
+- **Classifier:** Logistic Regression
+- **Cross-validation:** 5-fold stratified CV with shuffling
+- **Mean training CV ROC-AUC:** 0.848
 
-The selected model is **Logistic Regression**.
+Preprocessing is fitted within each cross-validation fold.
 
-A classification threshold of **0.3** was selected instead of the default 0.5 because the primary business objective is to identify customers who are likely to churn.
+### Data Split
 
-### Final Results
+| Split | Customers | Proportion |
+| --- | ---: | ---: |
+| Training | 4,225 | 60% |
+| Validation | 1,409 | 20% |
+| Test | 1,409 | 20% |
 
-| Metric          | Result |
-| --------------- | -----: |
-| Accuracy        | 75.00% |
-| Churn Precision |    52% |
-| Churn Recall    |    75% |
-| Churn F1-score  |   0.62 |
-| ROC-AUC         |  0.842 |
+### Threshold Selection
 
-At the selected threshold of 0.3, the model identified **282 of 374 actual churn customers** in the test set.
+A threshold of **0.38** achieved the highest validation F1-score among thresholds from 0.05 to 0.95 in steps of 0.01.
 
-The lower threshold increases churn recall while also increasing false positives. In a real business environment, the final threshold should be determined using the actual costs of false positives and false negatives.
+The threshold was fixed before evaluating the updated pipeline on the test split. A real deployment should select its operating threshold using business costs and retention objectives.
+
+## Updated Test Results
+
+| Metric | Result |
+| --- | ---: |
+| Classification threshold | 0.38 |
+| Accuracy | 77.64% |
+| ROC-AUC | 0.843 |
+| Churn precision | 56.5% |
+| Churn recall | 68.7% |
+| Churn F1-score | 0.620 |
+
+### Confusion Matrix
+
+| Actual / Predicted | Stay | Churn |
+| --- | ---: | ---: |
+| Stay | 837 | 198 |
+| Churn | 117 | 257 |
+
+The model identified **257 of 374 actual churn customers**, missed 117, and flagged 198 non-churn customers.
 
 ## Key EDA Findings
 
-The exploratory analysis revealed several important patterns:
+- Month-to-month customers had higher observed churn rates.
+- Electronic check users had higher observed churn rates.
+- Customers with shorter tenure were more likely to churn.
+- Churned customers had higher average monthly charges.
+- Fiber optic customers showed higher churn than DSL customers.
+- Tenure and TotalCharges were strongly positively correlated.
 
-* Month-to-month contract customers had substantially higher churn rates.
-* Electronic check users showed a high churn rate.
-* Customers with shorter tenure were more likely to churn.
-* Churned customers had higher average monthly charges.
-* Fiber optic customers showed higher churn compared with DSL customers.
-* Tenure and TotalCharges had a strong positive correlation.
+These are associations in the sample dataset, not evidence of causation.
 
-## Repository Structure
+## Deployment
 
-```text
-telco-customer-churn-ml/
-│
-├── telco-customer-churn-eda-ml.ipynb
-└── README.md
-```
+The demo is hosted as a Hugging Face Static Space.
 
-> The trained model is deployed as an interactive Hugging Face Static Space, with predictions running entirely in the browser.
+It reproduces the fitted pipeline in JavaScript using the exported numeric scaling parameters, categorical encoding, model coefficients, and intercept.
 
-## Current Status
+- Predictions run locally in the browser.
+- Customer inputs are not sent to a prediction server.
+- JavaScript predictions were compared with the Python pipeline on 200 generated customer profiles and matched within floating-point precision.
 
-### Completed
+## Repository Contents
 
-*  Data cleaning
-*  Exploratory data analysis
-*  Feature encoding
-*  Train/test split
-*  Feature scaling
-*  Multiple classification models
-*  Cross-validation
-*  Hyperparameter tuning
-*  Confusion matrix analysis
-*  ROC-AUC evaluation
-*  Threshold tuning
-*  Class imbalance analysis
-*  Final model selection
-*  Model export
-*  Browser-based inference
-*  Hugging Face demo deployment
+| Path | Purpose |
+| --- | --- |
+| `telco-customer-churn-eda-ml.ipynb` | EDA, experiments, final pipeline, evaluation, and export |
+| `demo/index.html` | Interactive demo with browser-based inference |
+| `README.md` | Project documentation |
 
 ## Kaggle Notebook
 
-The complete exploratory analysis and machine learning workflow is available on Kaggle:
-
-https://www.kaggle.com/code/anjulaprasad/telco-customer-churn-eda-ml
+[View the complete notebook](https://www.kaggle.com/code/anjulaprasad/telco-customer-churn-eda-ml)
 
 ## Tech Stack
 
-* Python
-* Pandas
-* NumPy
-* Matplotlib
-* Seaborn
-* Scikit-learn
-* Jupyter Notebook
-* Kaggle
+Python, Pandas, NumPy, Matplotlib, Seaborn, scikit-learn, Joblib, Jupyter Notebook, Kaggle, HTML, CSS, JavaScript, and Hugging Face Spaces.
 
-## Disclaimer
+## Limitations
 
-This project is an educational and portfolio machine learning project based on a publicly available sample dataset.
+This is an educational portfolio project using a public sample dataset.
 
-The reported model performance should not be interpreted as production performance for an actual telecom company. A production system would require additional validation, business cost analysis, monitoring, and testing on real-world data.
+Preprocessing and threshold selection are now separated correctly. However, the test split had already been inspected during earlier experiments, so the reported results remain exploratory rather than an independent final evaluation.
+
+Probabilities have not been separately calibrated. Production use would require independent data, business cost analysis, monitoring, and validation for the intended telecom provider.
 
 ## Author
 
 **Anjula Prasad**
 
-Software Engineer | AI/ML Engineer
-
-* GitHub: [Anjula2001](https://github.com/Anjula2001)
-* Kaggle: [Anjula Prasad](https://www.kaggle.com/anjulaprasad)
+- [GitHub](https://github.com/Anjula2001)
+- [Kaggle](https://www.kaggle.com/anjulaprasad)
